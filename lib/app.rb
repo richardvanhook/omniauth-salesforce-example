@@ -3,13 +3,6 @@ require "omniauth"
 require "omniauth-salesforce"
 require "haml"
 
-#OmniAuth.config.on_failure do |env|
-#  puts "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
-#  env['omniauth.error'].backtrace.each{|b| puts b}
-#  puts env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
-#  [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
-#end
-
 set :root, File.dirname(__FILE__) + '/../'
 
 use Rack::Session::Cookie
@@ -35,25 +28,24 @@ get '/logout' do
 end
 
 helpers do
-  def htmlize_hash(hash, nested = false)
-    output = "<table class='hash'>"
+  def htmlize_hash(title, hash)
+    hashes = nil
+    strings = nil
     hash.each_pair do |key, value|
-      output << "<tr><th>#{key}</th><td>"
       case value
       when Hash
-        if nested
-          output << "<span class='object'>Hash</span>"
-        else
-          output << htmlize_hash(value, true)
-        end
-      when String
-        output << value
+        hashes ||= ""
+        hashes << htmlize_hash(key,value)
       else
-        output << "<span class='object'>#{value.class.to_s}</span>"
+        strings ||= "<table>"
+        strings << "<tr><th scope='row'>#{key}</th><td>#{value}</td></tr>"
       end
-      output << "</td></tr>"
     end
-    output << "</table>"
+    output = "<div data-role='collapsible' data-theme='b' data-content-theme='b'><h3>#{title}</h3>"
+    output << strings unless strings.nil?
+    output << "</table>" unless strings.nil?
+    output << hashes unless hashes.nil?
+    output << "</div>"
     output
   end
 end
