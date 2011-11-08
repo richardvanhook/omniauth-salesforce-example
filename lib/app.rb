@@ -7,6 +7,8 @@ set :root, File.dirname(__FILE__) + '/../'
 
 OmniAuth.config.on_failure do |env|
   puts "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
+  puts "code: #{env['omniauth.error'].code}"
+  puts "response: #{env['omniauth.error'].response}"
   env['omniauth.error'].backtrace.each{|b| puts b}
   puts env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
 
