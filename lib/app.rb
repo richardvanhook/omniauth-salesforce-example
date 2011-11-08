@@ -5,6 +5,14 @@ require "haml"
 
 set :root, File.dirname(__FILE__) + '/../'
 
+OmniAuth.config.on_failure do |env|
+  puts "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
+  env['omniauth.error'].backtrace.each{|b| puts b}
+  puts env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
+
+  [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
+end
+
 use Rack::Session::Cookie
 use OmniAuth::Builder do
   provider :salesforce, ENV['SALESFORCE_KEY'], ENV['SALESFORCE_SECRET']
