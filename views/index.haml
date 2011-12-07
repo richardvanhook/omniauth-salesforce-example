@@ -11,15 +11,52 @@
       %div{ :"data-role" => "header"}
         %h1 omniauth-salesforce-example
       %div{ :"data-role" => "content"}
-        <blockquote>This app demonstrates how to leverage OmniAuth 1.0 to achieve single sign-on between salesforce and any Ruby app.  <a href="https://github.com/richardvanhook/omniauth-salesforce-example">Click here to view the source code for this site.</a>
         - if session[:auth_hash] == nil
-          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/auth/salesforce"} Log in with your Salesforce credentials
+          %h3 You are NOT authenticated.
+          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "#", :onclick => "document.authenticate_form.submit();"} Log in with your Salesforce credentials
+          %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate", :method => "post"}
+            %div{:class => "ui-body"}
+              %div{:"data-role" => "collapsible", :"data-collapsed" => "true", :"data-theme" => "b", :"data-content-theme" => "c"}
+                %h3 Authentication Options
+                %p
+                  %div{:"data-role" => "fieldcontain"}
+                    %fieldset{:"data-role" => "controlgroup"}
+                      %legend Environment
+                      %input{:type => "radio", :name => "options[environment]", :id => "options[environment]-1", :value => "www", :checked => true}
+                      %label{:for => "options[environment]-1"} production (login.salesforce.com)
+                      %input{:type => "radio", :name => "options[environment]", :id => "options[environment]-2", :value => "test"}
+                      %label{:for => "options[environment]-2"} sandbox (test.salesforce.com)
+                  %div{:"data-role" => "fieldcontain"}
+                    %fieldset{:"data-role" => "controlgroup"}
+                      %legend Display
+                      %input{:type => "radio", :name => "options[display]", :id => "options[display]-1", :value => "page", :checked => true}
+                      %label{:for => "options[display]-1"} page:  full-page authorization screen
+                      %input{:type => "radio", :name => "options[display]", :id => "options[display]-2", :value => "popup"}
+                      %label{:for => "options[display]-2"} popup:  compact dialog optimized for modern web browser popup windows.
+                      %input{:type => "radio", :name => "options[display]", :id => "options[display]-3", :value => "touch"}
+                      %label{:for => "options[display]-3"} touch:  mobile-optimized dialog designed for modern smartphones, such as Android and iPhone.
+                  %fieldset{:"data-role" => "controlgroup"}
+                    %legend Access Level
+                    - default_scopes = Set.new(%w(api id refresh_token))
+                    - %w(api chatter_api full id refresh_token visualforce web).each do |scope|
+                      %input{:type => "checkbox", :name => "options[scope|#{scope}]", :id => "options[scope|#{scope}]", :class => "custom", :checked => default_scopes.include?(scope)}
+                      %label{:for => "options[scope|#{scope}]"} #{scope}
+                  %div{:"data-role" => "fieldcontain"}
+                    %label{:for => "options[immediate]"} Immediate
+                    %select{:id => "options[immediate]", :name => "options[immediate]", :"data-role" => "slider"}
+                      %option{:value => "false"} No
+                      %option{:value => "true"} Yes
         - else
-          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/logout"} Log out
+          %h3 You've been authenticated as:
+          %div{:class => "ui-body"}
+            %img{:align => "left", :src => session[:auth_hash][:info][:image], :style => "margin-right: 12px"}
+            %strong #{session[:auth_hash][:info][:name]}
+            %br
+            #{session[:auth_hash][:info][:username]}
+            %br
+            Org: #{session[:auth_hash][:info][:organization_id]}            
+          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/unauthenticate"} Log out (from this app only, not salesforce.com)
+          %div{:class => "ui-body"}
+            = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])
         %a{:href => "https://github.com/richardvanhook/omniauth-salesforce-example"}
           %img{:style => "position: absolute; top: 0; right: 0; border: 0;", :src => "https://a248.e.akamai.net/assets.github.com/img/e6bef7a091f5f3138b8cd40bc3e114258dd68ddf/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67", :alt => "Fork me on GitHub"}
-        %br
-        - if session[:auth_hash] != nil
-          %div{:class => "ui-body ui-body-b"}
-            %p The following auth hash was returned by OmniAuth:
-            = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])

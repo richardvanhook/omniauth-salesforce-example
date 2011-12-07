@@ -1,0 +1,30 @@
+%h3
+  You're authenticated yo!  (oauth is so cool...)
+%a{:href => "/unauthenticate"} Log out
+(from this app only, not salesforce.com)
+%h3 Some of your information
+%table
+  %tr
+    %td
+      %strong thumbnail:
+    %td
+      %img{:src => session[:auth_hash][:info][:image]}
+  %tr
+    %td
+      %strong username:
+    %td #{session[:auth_hash][:info][:username]}
+  %tr
+    %td
+      %strong instance_url:
+    %td #{session[:auth_hash][:info][:urls]}
+  %tr
+    %td
+      %strong user_id:
+    %td #{session[:auth_hash][:info][:user_id]}
+  %tr
+    %td
+      %strong organization_id:
+    %td #{session[:auth_hash][:info][:organization_id]}
+%p 
+  The following auth hash was returned by OmniAuth:
+  = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])

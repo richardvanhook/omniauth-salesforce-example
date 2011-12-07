@@ -1,5 +1,6 @@
 source 'http://rubygems.org'
 gem 'sinatra'
+gem 'haml'
 gem 'omniauth'
 gem 'omniauth-salesforce'
-gem 'haml'
+gem 'thin'
