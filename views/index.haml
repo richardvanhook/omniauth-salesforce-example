@@ -13,7 +13,7 @@
       %div{ :"data-role" => "content"}
         - if session[:auth_hash] == nil
           %h3 You are NOT authenticated.
-          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "#", :onclick => "document.authenticate_form.submit();"} Log in with your Salesforce credentials
+          %a{:"data-role" => "button", :"data-ajax" => "false", :href => "#", :onclick => "document.authenticate_form.submit();"} Authenticate using your salesforce credentials
           %form{:id => "authenticate_form", :name => "authenticate_form", :action => "/authenticate", :method => "post"}
             %div{:class => "ui-body"}
               %div{:"data-role" => "collapsible", :"data-collapsed" => "true", :"data-theme" => "b", :"data-content-theme" => "c"}
@@ -22,10 +22,12 @@
                   %div{:"data-role" => "fieldcontain"}
                     %fieldset{:"data-role" => "controlgroup"}
                       %legend Environment
-                      %input{:type => "radio", :name => "options[environment]", :id => "options[environment]-1", :value => "www", :checked => true}
-                      %label{:for => "options[environment]-1"} production (login.salesforce.com)
-                      %input{:type => "radio", :name => "options[environment]", :id => "options[environment]-2", :value => "test"}
-                      %label{:for => "options[environment]-2"} sandbox (test.salesforce.com)
+                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-1", :value => "salesforce", :checked => true}
+                      %label{:for => "options[provider]-1"} production (login.salesforce.com)
+                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-2", :value => "salesforcesandbox"}
+                      %label{:for => "options[provider]-2"} sandbox (test.salesforce.com)
+                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-3", :value => "databasedotcom"}
+                      %label{:for => "options[provider]-3"} database.com (login.database.com)
                   %div{:"data-role" => "fieldcontain"}
                     %fieldset{:"data-role" => "controlgroup"}
                       %legend Display
@@ -52,9 +54,11 @@
             %img{:align => "left", :src => session[:auth_hash][:info][:image], :style => "margin-right: 12px"}
             %strong #{session[:auth_hash][:info][:name]}
             %br
-            #{session[:auth_hash][:info][:username]}
+            #{session[:auth_hash][:extra][:username]}
             %br
-            Org: #{session[:auth_hash][:info][:organization_id]}            
+            Org: #{session[:auth_hash][:extra][:organization_id]}  
+            %br
+            #{session[:auth_hash][:extra][:instance_url]}  
           %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/unauthenticate"} Log out (from this app only, not salesforce.com)
           %div{:class => "ui-body"}
             = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])

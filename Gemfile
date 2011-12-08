@@ -1,5 +1,6 @@
 source 'http://rubygems.org'
 gem 'sinatra'
+gem 'rack-ssl'
 gem 'haml'
 gem 'omniauth'
 gem 'omniauth-salesforce'
