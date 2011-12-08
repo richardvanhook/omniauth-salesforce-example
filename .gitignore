@@ -1,2 +1,6 @@
 notes.txt
 lib
+views/authenticated.haml
+views/error.haml
+views/layout.haml
+views/unauthenticated.haml
