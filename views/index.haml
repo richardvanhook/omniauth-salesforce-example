@@ -26,8 +26,10 @@
                       %label{:for => "options[provider]-1"} production (login.salesforce.com)
                       %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-2", :value => "salesforcesandbox"}
                       %label{:for => "options[provider]-2"} sandbox (test.salesforce.com)
-                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-3", :value => "databasedotcom"}
-                      %label{:for => "options[provider]-3"} database.com (login.database.com)
+                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-3", :value => "salesforceprerelease"}
+                      %label{:for => "options[provider]-3"} pre-release (prerellogin.pre.salesforce.com)
+                      %input{:type => "radio", :name => "options[provider]", :id => "options[provider]-4", :value => "databasedotcom"}
+                      %label{:for => "options[provider]-4"} database.com (login.database.com)
                   %div{:"data-role" => "fieldcontain"}
                     %fieldset{:"data-role" => "controlgroup"}
                       %legend Display
@@ -56,9 +58,9 @@
             %br
             #{session[:auth_hash][:extra][:username]}
             %br
-            Org: #{session[:auth_hash][:extra][:organization_id]}  
+            #{session[:auth_hash][:extra][:organization_id]}
             %br
-            #{session[:auth_hash][:extra][:instance_url]}  
+            #{session[:auth_hash][:extra][:instance_url]} 
           %a{:"data-role" => "button", :"data-ajax" => "false", :href => "/unauthenticate"} Log out (from this app only, not salesforce.com)
           %div{:class => "ui-body"}
             = htmlize_hash("ENV['omniauth.auth']",session[:auth_hash])
