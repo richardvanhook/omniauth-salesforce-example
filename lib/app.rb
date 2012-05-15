@@ -62,14 +62,17 @@ class OmniAuthSalesforceExample < Sinatra::Base
     request.env['rack.session'] = {}
     redirect '/'  
   end
-  
+
+  get '/auth/failure' do
+    haml :error, :locals => { :message => params[:message] } 
+  end
+
   get '/auth/:provider/callback' do
     session[:auth_hash] = env['omniauth.auth']
     redirect '/' unless session[:auth_hash] == nil
   end
 
   get '/error' do
-    haml :error, :locals => { :message => "Message goes here 123" } 
   end
 
   get '/*' do
