@@ -19,14 +19,13 @@ class OmniAuthSalesforceExample < Sinatra::Base
   use Rack::Session::Pool
 
   OmniAuth.config.on_failure do |env|
-    
-    exception = env['omniauth.error']
-    error_type = env['omniauth.error.type']
-    strategy = env['omniauth.error.strategy']
-    p exception
-    logger.info exception
-    
-    [302, {'Location' => '/auth/failure', 'Content-Type'=> 'text/html'}, []]
+    logger.info "loading data"
+    logger.info "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
+    logger.info "code: #{env['omniauth.error'].code}"
+    logger.info "response: #{env['omniauth.error'].response}"
+    env['omniauth.error'].backtrace.each{|b| logger.info b}
+    logger.info env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
+    [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
   end
 
   use OmniAuth::Builder do
