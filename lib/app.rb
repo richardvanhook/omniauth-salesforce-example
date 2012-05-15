@@ -19,13 +19,17 @@ class OmniAuthSalesforceExample < Sinatra::Base
   use Rack::Session::Pool
 
   OmniAuth.config.on_failure do |env|
-    logger.info "loading data"
-    logger.info "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
-    logger.info "code: #{env['omniauth.error'].code}"
-    logger.info "response: #{env['omniauth.error'].response}"
-    env['omniauth.error'].backtrace.each{|b| logger.info b}
-    logger.info env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
+    p "loading data"
+    p "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
+    p "code: #{env['omniauth.error'].code}"
+    p "response: #{env['omniauth.error'].response}"
+    env['omniauth.error'].backtrace.each{|b| p b}
+    p env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
     [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
+    #uri = Addressable::URI.new
+    #uri.query_values = {:state => request.fullpath}
+	  #redirect to("/authenticate?#{uri.query}") 
+    
   end
 
   use OmniAuth::Builder do
