@@ -1,5 +1,4 @@
 require "sinatra/base"
-require "encrypted_cookie"
 require "rack/ssl" unless ENV['RACK_ENV'] == "development"
 require "haml"
 require "omniauth"
@@ -8,6 +7,7 @@ require "omniauth-salesforce"
 class OmniAuthSalesforceExample < Sinatra::Base
 
   configure do
+    enable :logging
     set :app_file,        __FILE__
     set :root,            File.expand_path("../..",__FILE__)
     set :port,            ENV['PORT']
@@ -18,14 +18,15 @@ class OmniAuthSalesforceExample < Sinatra::Base
   use Rack::SSL unless ENV['RACK_ENV'] == "development"
   use Rack::Session::Pool
 
-  OmniAuth.config.on_failure do |env|
-    p "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
-    p "code: #{env['omniauth.error'].code}"
-    p "response: #{env['omniauth.error'].response}"
-    env['omniauth.error'].backtrace.each{|b| p b}
-    p env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
-    [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
-  end
+#  OmniAuth.config.on_failure do |env|
+#    logger.info "loading data"
+#    logger.info "#{env['omniauth.error'].class.to_s}: #{env['omniauth.error'].message}"
+#    logger.info "code: #{env['omniauth.error'].code}"
+#   logger.info "response: #{env['omniauth.error'].response}"
+#    env['omniauth.error'].backtrace.each{|b| logger.info b}
+#    logger.info env['omniauth.error'].response.inspect if env['omniauth.error'].respond_to?(:response)
+#    [302, {'Location' => '/auth/failure'}, ['302 Redirect']]
+#  end
 
   use OmniAuth::Builder do
     provider :salesforce, 
@@ -42,6 +43,10 @@ class OmniAuthSalesforceExample < Sinatra::Base
              ENV['DATABASE_DOT_COM_SECRET']
   end
 
+  before do
+    logger.info "hit: #{request.path_info}"
+  end
+  
   post '/authenticate' do
     provider = sanitize_provider(params[:options]['provider'])
     auth_params = {
@@ -61,6 +66,10 @@ class OmniAuthSalesforceExample < Sinatra::Base
   get '/auth/:provider/callback' do
     session[:auth_hash] = env['omniauth.auth']
     redirect '/' unless session[:auth_hash] == nil
+  end
+
+  get '/error' do
+    haml :error, :locals => { :message => "Message goes here 123" } 
   end
 
   get '/*' do
