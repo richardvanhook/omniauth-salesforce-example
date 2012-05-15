@@ -19,13 +19,14 @@ class OmniAuthSalesforceExample < Sinatra::Base
   use Rack::Session::Pool
 
   OmniAuth.config.on_failure do |env|
-    error_code = env['omniauth.error'].code
-    puts "error_code: #{error_code}"
-    error_description = env['omniauth.error'].description
-    puts "error_description: #{error_description}"
-    new_path = "#{env['SCRIPT_NAME']}#{OmniAuth.config.path_prefix}/failure?message=#{error_code + ": " + error_description}"
-    puts "new_path: #{new_path}"
-    [302, {'Location' => new_path, 'Content-Type'=> 'text/html'}, []]
+    [302, 
+      {'Location' => env['SCRIPT_NAME'] +
+        OmniAuth.config.path_prefix + 
+        "/failure?message=" + 
+        env['omniauth.error'].code + ": " + env['omniauth.error'].description, 
+      'Content-Type'=> 'text/html'}, 
+      []
+    ]
   end
 
   use OmniAuth::Builder do
